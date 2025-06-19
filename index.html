@@ -3,33 +3,191 @@
 <head>
   <meta charset="UTF-8">
   <title>Generador de Claves</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --color-fondo-claro: linear-gradient(135deg, #3a7bd5, #00d2ff);
+      --color-fondo-oscuro: linear-gradient(135deg, #121212, #1f1f1f);
+      --color-texto-claro: #ffffff;
+      --color-texto-oscuro: #ffffff;
+      --color-boton-claro: #ffffff;
+      --color-boton-oscuro: #333333;
+      --color-boton-hover-claro: #e0e0e0;
+      --color-boton-hover-oscuro: #444444;
+      --color-clave-fondo-claro: rgba(255, 255, 255, 0.15);
+      --color-clave-fondo-oscuro: rgba(255, 255, 255, 0.1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: var(--color-fondo-oscuro);
+        color: var(--color-texto-oscuro);
+      }
+
+      button {
+        background: var(--color-boton-oscuro);
+        color: #fff;
+      }
+
+      button:hover {
+        background: var(--color-boton-hover-oscuro);
+      }
+
+      #clave {
+        background: var(--color-clave-fondo-oscuro);
+      }
+
+      #historial li {
+        background: rgba(255, 255, 255, 0.07);
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background: var(--color-fondo-claro);
+        color: var(--color-texto-claro);
+      }
+
+      button {
+        background: var(--color-boton-claro);
+        color: #3a7bd5;
+      }
+
+      button:hover {
+        background: var(--color-boton-hover-claro);
+      }
+
+      #clave {
+        background: var(--color-clave-fondo-claro);
+      }
+
+      #historial li {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
       text-align: center;
-      padding-top: 100px;
-      background-color: #f0f0f0;
+      padding: 40px 20px;
+      transition: background 0.3s ease, color 0.3s ease;
     }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
     #clave {
-      font-size: 60px;
-      margin: 20px 0;
+      font-size: 4rem;
       font-weight: bold;
+      letter-spacing: 5px;
+      margin: 20px 0;
+      padding: 20px 40px;
+      border-radius: 20px;
     }
+
+    .botones {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     button {
-      padding: 10px 20px;
-      font-size: 18px;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #historial {
+      margin-top: 30px;
+      max-width: 400px;
+      width: 100%;
+      text-align: left;
+    }
+
+    #historial h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    #historial ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    #historial li {
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hora {
+      font-size: 0.9rem;
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
   <h1>Clave Aleatoria</h1>
   <div id="clave">------</div>
-  <button onclick="generarClave()">Generar Clave</button>
+  <div class="botones">
+    <button onclick="generarClave()">Generar Clave</button>
+    <button onclick="copiarClave()">Copiar Clave</button>
+  </div>
+
+  <div id="historial">
+    <h2>Historial reciente</h2>
+    <ul id="lista-claves"></ul>
+  </div>
 
   <script>
+    let claveActual = "";
+
     function generarClave() {
-      let clave = Math.floor(100000 + Math.random() * 900000);
-      document.getElementById('clave').innerText = clave;
+      claveActual = Math.floor(100000 + Math.random() * 900000).toString();
+      document.getElementById('clave').innerText = claveActual;
+      agregarAlHistorial(claveActual);
+    }
+
+    function copiarClave() {
+      if (claveActual === "") return;
+      navigator.clipboard.writeText(claveActual)
+        .then(() => alert("Clave copiada al portapapeles"))
+        .catch(err => alert("No se pudo copiar la clave"));
+    }
+
+    function agregarAlHistorial(clave) {
+      const lista = document.getElementById('lista-claves');
+      const nueva = document.createElement('li');
+      const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      nueva.innerHTML = `<span>${clave}</span><span class="hora">${hora}</span>`;
+      lista.prepend(nueva);
+      while (lista.childElementCount > 5) {
+        lista.removeChild(lista.lastChild);
+      }
     }
   </script>
 </body>
