@@ -1,80 +1,68 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Generador de Claves</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Generador de Claves Divertido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --color-fondo-claro: linear-gradient(135deg, #3a7bd5, #00d2ff);
       --color-fondo-oscuro: linear-gradient(135deg, #121212, #1f1f1f);
-      --color-texto-claro: #ffffff;
-      --color-texto-oscuro: #ffffff;
-      --color-boton-claro: #ffffff;
-      --color-boton-oscuro: #333333;
+      --color-texto-claro: #fff;
+      --color-texto-oscuro: #fff;
+      --color-boton-claro: #fff;
+      --color-boton-oscuro: #333;
       --color-boton-hover-claro: #e0e0e0;
-      --color-boton-hover-oscuro: #444444;
+      --color-boton-hover-oscuro: #444;
       --color-clave-fondo-claro: rgba(255, 255, 255, 0.15);
       --color-clave-fondo-oscuro: rgba(255, 255, 255, 0.1);
     }
-
     @media (prefers-color-scheme: dark) {
       body {
         background: var(--color-fondo-oscuro);
         color: var(--color-texto-oscuro);
       }
-
       button {
         background: var(--color-boton-oscuro);
         color: #fff;
       }
-
       button:hover {
         background: var(--color-boton-hover-oscuro);
       }
-
       #clave {
         background: var(--color-clave-fondo-oscuro);
       }
-
       #historial li {
         background: rgba(255, 255, 255, 0.07);
       }
     }
-
     @media (prefers-color-scheme: light) {
       body {
         background: var(--color-fondo-claro);
         color: var(--color-texto-claro);
       }
-
       button {
         background: var(--color-boton-claro);
         color: #3a7bd5;
       }
-
       button:hover {
         background: var(--color-boton-hover-claro);
       }
-
       #clave {
         background: var(--color-clave-fondo-claro);
       }
-
       #historial li {
         background: rgba(255, 255, 255, 0.1);
       }
     }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: "Inter", sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -83,22 +71,24 @@
       text-align: center;
       padding: 40px 20px;
       transition: background 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
     }
-
     h1 {
       font-size: 2rem;
       margin-bottom: 30px;
     }
-
     #clave {
       font-size: 4rem;
-      font-weight: bold;
+      font-weight: 700;
       letter-spacing: 5px;
       margin: 20px 0;
       padding: 20px 40px;
       border-radius: 20px;
+      user-select: none;
+      min-width: 180px;
+      background: var(--color-clave-fondo-claro);
+      transition: background 0.3s ease;
     }
-
     .botones {
       display: flex;
       gap: 15px;
@@ -106,7 +96,6 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-
     button {
       border: none;
       padding: 12px 20px;
@@ -115,25 +104,22 @@
       cursor: pointer;
       transition: background 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      user-select: none;
     }
-
     #historial {
       margin-top: 30px;
       max-width: 400px;
       width: 100%;
       text-align: left;
     }
-
     #historial h2 {
       font-size: 1.2rem;
       margin-bottom: 10px;
     }
-
     #historial ul {
       list-style: none;
       padding-left: 0;
     }
-
     #historial li {
       padding: 10px 15px;
       margin-bottom: 8px;
@@ -142,20 +128,48 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: rgba(255, 255, 255, 0.15);
     }
-
     .hora {
       font-size: 0.9rem;
       opacity: 0.8;
+      min-width: 50px;
+      text-align: right;
+    }
+    #contador {
+      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    /* Animación tragamonedas */
+    @keyframes slotAnim {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .slot-anim {
+      animation: slotAnim 0.15s ease-in-out infinite;
+    }
+
+    /* Confetti */
+    #confetti-canvas {
+      position: fixed;
+      pointer-events: none;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
     }
   </style>
 </head>
 <body>
-  <h1>Clave Aleatoria</h1>
+  <h1>Clave Aleatoria Divertida</h1>
+  <div id="contador">Claves generadas: 0</div>
   <div id="clave">------</div>
   <div class="botones">
     <button onclick="generarClave()">Generar Clave</button>
     <button onclick="copiarClave()">Copiar Clave</button>
+    <button onclick="compartirWhatsapp()">Compartir por WhatsApp</button>
   </div>
 
   <div id="historial">
@@ -163,31 +177,139 @@
     <ul id="lista-claves"></ul>
   </div>
 
+  <canvas id="confetti-canvas"></canvas>
+
   <script>
     let claveActual = "";
+    let contador = 0;
+    const lista = document.getElementById('lista-claves');
+    const contadorDiv = document.getElementById('contador');
+    const claveDiv = document.getElementById('clave');
+
+    // Función para animar como tragamonedas antes de mostrar clave real
+    function animarClave(finalClave, duracion = 1200) {
+      const start = Date.now();
+      let animInterval;
+      const chars = "0123456789";
+      claveDiv.classList.add("slot-anim");
+      animInterval = setInterval(() => {
+        const elapsed = Date.now() - start;
+        if (elapsed > duracion) {
+          clearInterval(animInterval);
+          claveDiv.classList.remove("slot-anim");
+          claveDiv.textContent = finalClave;
+        } else {
+          let randomClave = "";
+          for(let i=0; i<6; i++) {
+            randomClave += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+          claveDiv.textContent = randomClave;
+        }
+      }, 60);
+    }
 
     function generarClave() {
-      claveActual = Math.floor(100000 + Math.random() * 900000).toString();
-      document.getElementById('clave').innerText = claveActual;
-      agregarAlHistorial(claveActual);
+      const nuevaClave = Math.floor(100000 + Math.random() * 900000).toString();
+      animarClave(nuevaClave);
+      claveActual = nuevaClave;
+      agregarAlHistorial(nuevaClave);
+      contador++;
+      contadorDiv.textContent = `Claves generadas: ${contador}`;
+      dispararConfetti();
     }
 
     function copiarClave() {
-      if (claveActual === "") return;
+      if (!claveActual) return;
       navigator.clipboard.writeText(claveActual)
         .then(() => alert("Clave copiada al portapapeles"))
-        .catch(err => alert("No se pudo copiar la clave"));
+        .catch(() => alert("No se pudo copiar la clave"));
     }
 
     function agregarAlHistorial(clave) {
-      const lista = document.getElementById('lista-claves');
       const nueva = document.createElement('li');
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       nueva.innerHTML = `<span>${clave}</span><span class="hora">${hora}</span>`;
       lista.prepend(nueva);
-      while (lista.childElementCount > 5) {
+      if (lista.childElementCount > 5) {
         lista.removeChild(lista.lastChild);
       }
+    }
+
+    function compartirWhatsapp() {
+      if (!claveActual) return alert("Generá una clave primero!");
+      const texto = encodeURIComponent(`Clave generada: ${claveActual}`);
+      const url = `https://wa.me/?text=${texto}`;
+      window.open(url, "_blank");
+    }
+
+    // Confetti básico
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const ctx = confettiCanvas.getContext('2d');
+    let confettiPieces = [];
+
+    function resizeCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class ConfettiPiece {
+      constructor() {
+        this.x = Math.random() * confettiCanvas.width;
+        this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+        this.size = (Math.random() * 8) + 4;
+        this.speed = (Math.random() * 3) + 2;
+        this.angle = Math.random() * 2 * Math.PI;
+        this.spin = (Math.random() * 0.1) + 0.05;
+        this.colors = ['#FFC107', '#4CAF50', '#03A9F4', '#E91E63', '#FF5722'];
+        this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+      }
+      update() {
+        this.y += this.speed;
+        this.angle += this.spin;
+        if (this.y > confettiCanvas.height) {
+          this.y = -this.size;
+          this.x = Math.random() * confettiCanvas.width;
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+        ctx.restore();
+      }
+    }
+
+    function crearConfetti() {
+      for(let i = 0; i < 100; i++) {
+        confettiPieces.push(new ConfettiPiece());
+      }
+    }
+
+    function dispararConfetti() {
+      crearConfetti();
+      let duracion = 3000;
+      let start = Date.now();
+
+      function animar() {
+        let elapsed = Date.now() - start;
+        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        confettiPieces.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        if (elapsed < duracion) {
+          requestAnimationFrame(animar);
+        } else {
+          confettiPieces = [];
+          ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+      }
+      animar();
     }
   </script>
 </body>
