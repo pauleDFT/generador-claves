@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Claves</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 100px;
+      background-color: #f0f0f0;
+    }
+    #clave {
+      font-size: 60px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Clave Aleatoria</h1>
+  <div id="clave">------</div>
+  <button onclick="generarClave()">Generar Clave</button>
+
+  <script>
+    function generarClave() {
+      let clave = Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('clave').innerText = clave;
+    }
+  </script>
+</body>
+</html>
