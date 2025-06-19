@@ -16,6 +16,7 @@
       --color-clave-fondo-claro: rgba(255, 255, 255, 0.15);
       --color-clave-fondo-oscuro: rgba(255, 255, 255, 0.1);
     }
+    /* Estilos para el modo oscuro y claro */
     @media (prefers-color-scheme: dark) {
       body {
         color: var(--color-texto-oscuro);
@@ -29,9 +30,6 @@
       }
       #clave {
         background: var(--color-clave-fondo-oscuro);
-      }
-      #historial li {
-        background: rgba(255, 255, 255, 0.07);
       }
     }
     @media (prefers-color-scheme: light) {
@@ -48,10 +46,8 @@
       #clave {
         background: var(--color-clave-fondo-claro);
       }
-      #historial li {
-        background: rgba(255, 255, 255, 0.1);
-      }
     }
+    /* Estilos generales */
     * {
       margin: 0;
       padding: 0;
@@ -96,6 +92,12 @@
       z-index: 10;
       position: relative;
       color: #fff;
+      animation: salto 0.5s ease;
+    }
+    @keyframes salto {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
     }
     .botones {
       display: flex;
@@ -180,7 +182,6 @@
     @keyframes flotar {
       0% { transform: translateY(100vh) translateX(0) scale(1); }
       100% { transform: translateY(-150px) translateX(30px) scale(1.2); }
-    }
   </style>
 </head>
 <body>
@@ -189,8 +190,8 @@
   <div id="contador">Claves generadas: 0</div>
   <div id="clave">------</div>
   <div class="botones">
-    <button onclick="generarClave()">Generar Clave</button>
-    <button onclick="copiarClave()">Copiar Clave</button>
+    <button aria-label="Generar una nueva clave" onclick="generarClave()">Generar Clave</button>
+    <button aria-label="Copiar la clave actual" onclick="copiarClave()">Copiar Clave</button>
   </div>
 
   <div id="historial">
@@ -198,12 +199,129 @@
     <ul id="lista-claves"></ul>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script>
+    // Configuración de partículas
+    particlesJS("fondo-animado", {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#ffffff"
+        },
+        "shape": {
+          "type": "circle",
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+          "polygon": {
+            "nb_sides": 5
+          },
+          "image": {
+            "src": "img/github.svg",
+            "width": 100,
+            "height": 100
+          }
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": false,
+          "anim": {
+            "enable": false,
+            "speed": 1,
+            "opacity_min": 0.1,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 5,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 40,
+            "size_min": 0.1,
+            "sync": false
+          }
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#ffffff",
+          "opacity": 0.4,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 6,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false,
+          "attract": {
+            "enable": false,
+            "rotateX": 600,
+            "rotateY": 1200
+          }
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 400,
+            "line_linked": {
+              "opacity": 1
+            }
+          },
+          "bubble": {
+            "distance": 400,
+            "size": 40,
+            "duration": 2,
+            "opacity": 8,
+            "speed": 3
+          },
+          "repulse": {
+            "distance": 200,
+            "duration": 0.4
+          },
+          "push": {
+            "particles_nb": 4
+          },
+          "remove": {
+            "particles_nb": 2
+          }
+        }
+      },
+      "retina_detect": true
+    });
+
     let claveActual = "";
     let contador = 0;
     const lista = document.getElementById('lista-claves');
     const contadorDiv = document.getElementById('contador');
     const claveDiv = document.getElementById('clave');
+
+    // Sonidos
+    const sonidoGenerar = new Audio('ruta/a/sonido-generar.mp3'); // Cambia la ruta al sonido
+    const sonidoCopiar = new Audio('ruta/a/sonido-copiar.mp3'); // Cambia la ruta al sonido
 
     function generarClave() {
       const nuevaClave = Math.floor(100000 + Math.random() * 900000).toString();
@@ -212,13 +330,17 @@
       agregarAlHistorial(nuevaClave);
       contador++;
       contadorDiv.textContent = `Claves generadas: ${contador}`;
+      sonidoGenerar.play(); // Reproducir sonido al generar clave
     }
 
     function copiarClave() {
       if (!claveActual) return;
       navigator.clipboard.writeText(claveActual)
-        .then(() => alert("Clave copiada al portapapeles"))
-        .catch(() => alert("No se pudo copiar la clave"));
+        .then(() => {
+          alert("Clave copiada al portapapeles");
+          sonidoCopiar.play(); // Reproducir sonido al copiar clave
+        })
+        .catch(() => alert("Error: No se pudo copiar la clave"));
     }
 
     function agregarAlHistorial(clave) {
@@ -226,10 +348,28 @@
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       nueva.innerHTML = `<span>${clave}</span><span class="hora">${hora}</span>`;
       lista.prepend(nueva);
+      
+      // Guardar en localStorage
+      let historial = JSON.parse(localStorage.getItem('historial')) || [];
+      historial.push({ clave, hora });
+      localStorage.setItem('historial', JSON.stringify(historial));
+
       if (lista.childElementCount > 5) {
         lista.removeChild(lista.lastChild);
       }
     }
+
+    function cargarHistorial() {
+      let historial = JSON.parse(localStorage.getItem('historial')) || [];
+      historial.forEach(item => {
+        const nueva = document.createElement('li');
+        nueva.innerHTML = `<span>${item.clave}</span><span class="hora">${item.hora}</span>`;
+        lista.appendChild(nueva);
+      });
+    }
+
+    // Llamar a cargarHistorial al cargar la página
+    window.onload = cargarHistorial;
 
     // Fondo animado burbujas
     const fondo = document.getElementById('fondo-animado');
