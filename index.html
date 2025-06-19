@@ -2,186 +2,138 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Generador de Claves con Fondo Animado</title>
+  <link rel="icon" href="https://emojiapi.dev/api/v1/key/64.png" />
+  <title>🔐 Generador de Claves</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --color-texto-claro: #fff;
-      --color-texto-oscuro: #fff;
-      --color-boton-claro: #fff;
-      --color-boton-oscuro: #333;
-      --color-boton-hover-claro: #e0e0e0;
-      --color-boton-hover-oscuro: #444;
-      --color-clave-fondo-claro: rgba(255, 255, 255, 0.15);
-      --color-clave-fondo-oscuro: rgba(255, 255, 255, 0.1);
+      --color-claro: #ffffff;
+      --color-oscuro: #121212;
     }
-    /* Estilos para el modo oscuro y claro */
-    @media (prefers-color-scheme: dark) {
-      body {
-        color: var(--color-texto-oscuro);
-      }
-      button {
-        background: var(--color-boton-oscuro);
-        color: #fff;
-      }
-      button:hover {
-        background: var(--color-boton-hover-oscuro);
-      }
-      #clave {
-        background: var(--color-clave-fondo-oscuro);
-      }
-    }
-    @media (prefers-color-scheme: light) {
-      body {
-        color: var(--color-texto-claro);
-      }
-      button {
-        background: var(--color-boton-claro);
-        color: #3a7bd5;
-      }
-      button:hover {
-        background: var(--color-boton-hover-claro);
-      }
-      #clave {
-        background: var(--color-clave-fondo-claro);
-      }
-    }
-    /* Estilos generales */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body, html {
-      height: 100%;
-      font-family: "Inter", sans-serif;
-      overflow-x: hidden;
-      position: relative;
-    }
+
     body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 40px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       min-height: 100vh;
       text-align: center;
-      padding: 40px 20px;
       background: linear-gradient(135deg, #3a7bd5, #00d2ff);
-      transition: background 1s ease;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.modo-oscuro {
+      background: linear-gradient(135deg, #121212, #1f1f1f);
       color: white;
     }
+
     h1 {
-      font-size: 2rem;
-      margin-bottom: 30px;
-      z-index: 10;
-      position: relative;
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      z-index: 1;
     }
+
     #clave {
       font-size: 4rem;
+      letter-spacing: 6px;
       font-weight: 700;
-      letter-spacing: 5px;
-      margin: 20px 0;
+      background: rgba(255, 255, 255, 0.15);
       padding: 20px 40px;
       border-radius: 20px;
-      user-select: none;
-      min-width: 180px;
-      background: rgba(255,255,255,0.15);
+      margin: 20px 0;
       backdrop-filter: blur(10px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      z-index: 10;
-      position: relative;
-      color: #fff;
+      user-select: none;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      z-index: 1;
       animation: salto 0.5s ease;
     }
+
     @keyframes salto {
       0% { transform: translateY(0); }
       50% { transform: translateY(-10px); }
       100% { transform: translateY(0); }
     }
+
     .botones {
       display: flex;
-      gap: 15px;
-      margin-bottom: 30px;
       flex-wrap: wrap;
+      gap: 10px;
       justify-content: center;
-      z-index: 10;
-      position: relative;
+      margin-bottom: 20px;
+      z-index: 1;
     }
+
     button {
-      border: none;
-      padding: 12px 20px;
       font-size: 1rem;
+      padding: 10px 16px;
+      border: none;
       border-radius: 10px;
       cursor: pointer;
+      background: #ffffff;
+      color: #3a7bd5;
       transition: background 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      user-select: none;
     }
-    #historial {
-      margin-top: 30px;
-      max-width: 400px;
-      width: 100%;
-      text-align: left;
-      z-index: 10;
-      position: relative;
+
+    button:hover {
+      background: #e0e0e0;
     }
-    #historial h2 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-    }
-    #historial ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    #historial li {
-      padding: 10px 15px;
-      margin-bottom: 8px;
-      border-radius: 10px;
-      font-size: 1.1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-    }
-    .hora {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      min-width: 50px;
-      text-align: right;
-    }
+
     #contador {
       font-weight: 600;
       margin-bottom: 15px;
       font-size: 1.1rem;
-      z-index: 10;
-      position: relative;
-      color: #fff;
+      z-index: 1;
     }
-    /* Fondo animado burbujas */
+
+    #historial {
+      max-width: 400px;
+      width: 100%;
+      text-align: left;
+      z-index: 1;
+    }
+
+    #historial h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    #historial ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    #historial li {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 10px 15px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hora {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Fondo partículas */
     #fondo-animado {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       z-index: 0;
-      overflow: hidden;
-      background: linear-gradient(135deg, #3a7bd5, #00d2ff);
-      transition: background 2s ease;
+      pointer-events: none;
     }
-    .burbuja {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0.3;
-      background: rgba(255,255,255,0.2);
-      animation: flotar 15s linear infinite;
-      will-change: transform;
-      mix-blend-mode: screen;
-    }
-    @keyframes flotar {
-      0% { transform: translateY(100vh) translateX(0) scale(1); }
-      100% { transform: translateY(-150px) translateX(30px) scale(1.2); }
   </style>
 </head>
 <body>
@@ -190,8 +142,11 @@
   <div id="contador">Claves generadas: 0</div>
   <div id="clave">------</div>
   <div class="botones">
-    <button aria-label="Generar una nueva clave" onclick="generarClave()">Generar Clave</button>
-    <button aria-label="Copiar la clave actual" onclick="copiarClave()">Copiar Clave</button>
+    <button onclick="generarClave()">Generar Clave</button>
+    <button onclick="copiarClave()">Copiar Clave</button>
+    <button onclick="borrarHistorial()">Borrar Historial</button>
+    <button onclick="toggleSonido()" id="boton-sonido">🔊 Sonido: ON</button>
+    <button onclick="cambiarModo()" id="modo">🌙 Modo Oscuro</button>
   </div>
 
   <div id="historial">
@@ -199,129 +154,54 @@
     <ul id="lista-claves"></ul>
   </div>
 
+  <!-- Librería de partículas -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
   <script>
-    // Configuración de partículas
+    // Partículas
     particlesJS("fondo-animado", {
-      "particles": {
-        "number": {
-          "value": 80,
-          "density": {
-            "enable": true,
-            "value_area": 800
-          }
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: "#ffffff" },
+        shape: { type: "circle" },
+        opacity: { value: 0.3 },
+        size: { value: 4, random: true },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: "#ffffff",
+          opacity: 0.4,
+          width: 1,
         },
-        "color": {
-          "value": "#ffffff"
+        move: {
+          enable: true,
+          speed: 2,
+          direction: "none",
+          out_mode: "out"
         },
-        "shape": {
-          "type": "circle",
-          "stroke": {
-            "width": 0,
-            "color": "#000000"
-          },
-          "polygon": {
-            "nb_sides": 5
-          },
-          "image": {
-            "src": "img/github.svg",
-            "width": 100,
-            "height": 100
-          }
-        },
-        "opacity": {
-          "value": 0.5,
-          "random": false,
-          "anim": {
-            "enable": false,
-            "speed": 1,
-            "opacity_min": 0.1,
-            "sync": false
-          }
-        },
-        "size": {
-          "value": 5,
-          "random": true,
-          "anim": {
-            "enable": false,
-            "speed": 40,
-            "size_min": 0.1,
-            "sync": false
-          }
-        },
-        "line_linked": {
-          "enable": true,
-          "distance": 150,
-          "color": "#ffffff",
-          "opacity": 0.4,
-          "width": 1
-        },
-        "move": {
-          "enable": true,
-          "speed": 6,
-          "direction": "none",
-          "random": false,
-          "straight": false,
-          "out_mode": "out",
-          "bounce": false,
-          "attract": {
-            "enable": false,
-            "rotateX": 600,
-            "rotateY": 1200
-          }
-        }
       },
-      "interactivity": {
-        "detect_on": "canvas",
-        "events": {
-          "onhover": {
-            "enable": true,
-            "mode": "repulse"
-          },
-          "onclick": {
-            "enable": true,
-            "mode": "push"
-          },
-          "resize": true
+      interactivity: {
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" }
         },
-        "modes": {
-          "grab": {
-            "distance": 400,
-            "line_linked": {
-              "opacity": 1
-            }
-          },
-          "bubble": {
-            "distance": 400,
-            "size": 40,
-            "duration": 2,
-            "opacity": 8,
-            "speed": 3
-          },
-          "repulse": {
-            "distance": 200,
-            "duration": 0.4
-          },
-          "push": {
-            "particles_nb": 4
-          },
-          "remove": {
-            "particles_nb": 2
-          }
-        }
+        modes: {
+          repulse: { distance: 100 },
+          push: { particles_nb: 4 }
+        },
       },
-      "retina_detect": true
+      retina_detect: true,
     });
 
+    // Funcionalidad
     let claveActual = "";
     let contador = 0;
+    let sonidoActivo = true;
     const lista = document.getElementById('lista-claves');
     const contadorDiv = document.getElementById('contador');
     const claveDiv = document.getElementById('clave');
-
-    // Sonidos
-    const sonidoGenerar = new Audio('ruta/a/sonido-generar.mp3'); // Cambia la ruta al sonido
-    const sonidoCopiar = new Audio('ruta/a/sonido-copiar.mp3'); // Cambia la ruta al sonido
+    const sonidoGenerar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3');
+    const sonidoCopiar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3');
 
     function generarClave() {
       const nuevaClave = Math.floor(100000 + Math.random() * 900000).toString();
@@ -330,7 +210,7 @@
       agregarAlHistorial(nuevaClave);
       contador++;
       contadorDiv.textContent = `Claves generadas: ${contador}`;
-      sonidoGenerar.play(); // Reproducir sonido al generar clave
+      if (sonidoActivo) sonidoGenerar.play();
     }
 
     function copiarClave() {
@@ -338,9 +218,8 @@
       navigator.clipboard.writeText(claveActual)
         .then(() => {
           alert("Clave copiada al portapapeles");
-          sonidoCopiar.play(); // Reproducir sonido al copiar clave
-        })
-        .catch(() => alert("Error: No se pudo copiar la clave"));
+          if (sonidoActivo) sonidoCopiar.play();
+        });
     }
 
     function agregarAlHistorial(clave) {
@@ -348,62 +227,38 @@
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       nueva.innerHTML = `<span>${clave}</span><span class="hora">${hora}</span>`;
       lista.prepend(nueva);
-      
-      // Guardar en localStorage
       let historial = JSON.parse(localStorage.getItem('historial')) || [];
       historial.push({ clave, hora });
       localStorage.setItem('historial', JSON.stringify(historial));
-
-      if (lista.childElementCount > 5) {
-        lista.removeChild(lista.lastChild);
-      }
+      if (lista.childElementCount > 5) lista.removeChild(lista.lastChild);
     }
 
     function cargarHistorial() {
       let historial = JSON.parse(localStorage.getItem('historial')) || [];
-      historial.forEach(item => {
+      historial.slice(-5).forEach(item => {
         const nueva = document.createElement('li');
         nueva.innerHTML = `<span>${item.clave}</span><span class="hora">${item.hora}</span>`;
-        lista.appendChild(nueva);
+        lista.prepend(nueva);
       });
     }
 
-    // Llamar a cargarHistorial al cargar la página
+    function borrarHistorial() {
+      localStorage.removeItem('historial');
+      lista.innerHTML = "";
+    }
+
+    function toggleSonido() {
+      sonidoActivo = !sonidoActivo;
+      document.getElementById("boton-sonido").textContent = sonidoActivo ? "🔊 Sonido: ON" : "🔇 Sonido: OFF";
+    }
+
+    function cambiarModo() {
+      document.body.classList.toggle("modo-oscuro");
+      const esOscuro = document.body.classList.contains("modo-oscuro");
+      document.getElementById("modo").textContent = esOscuro ? "☀️ Modo Claro" : "🌙 Modo Oscuro";
+    }
+
     window.onload = cargarHistorial;
-
-    // Fondo animado burbujas
-    const fondo = document.getElementById('fondo-animado');
-    const burbujas = [];
-    const cantidadBurbujas = 20;
-
-    function crearBurbuja() {
-      const b = document.createElement('div');
-      b.classList.add('burbuja');
-      b.style.width = `${Math.random() * 60 + 20}px`;
-      b.style.height = b.style.width;
-      b.style.left = `${Math.random() * 100}vw`;
-      b.style.animationDuration = `${15 + Math.random() * 10}s`;
-      b.style.animationDelay = `${Math.random() * 15}s`;
-      fondo.appendChild(b);
-      burbujas.push(b);
-    }
-
-    for(let i=0; i < cantidadBurbujas; i++) {
-      crearBurbuja();
-    }
-
-    // Interactividad: las burbujas se mueven un poco con el mouse
-    document.body.addEventListener('mousemove', e => {
-      const ancho = window.innerWidth;
-      const alto = window.innerHeight;
-      const porcentajeX = e.clientX / ancho;
-      const porcentajeY = e.clientY / alto;
-      burbujas.forEach((b, i) => {
-        const movX = (porcentajeX - 0.5) * 30 * (i % 2 === 0 ? 1 : -1);
-        const movY = (porcentajeY - 0.5) * 20 * (i % 2 === 0 ? 1 : -1);
-        b.style.transform = `translate(${movX}px, ${movY}px)`;
-      });
-    });
   </script>
 </body>
 </html>
