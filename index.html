@@ -27,8 +27,34 @@
       background: #000;
       color: var(--verde-fluo);
       position: relative;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
       transition: background 0.8s ease;
+    }
+
+    /* Scrollbar personalizada para WebKit */
+    body::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    body::-webkit-scrollbar-track {
+      background: rgba(0, 20, 10, 0.5);
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00ff8c, #009956);
+      border-radius: 6px;
+      border: 2px solid #001a0d;
+    }
+
+    body::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #00ffcc, #00c46b);
+    }
+
+    /* Scrollbar para Firefox */
+    body {
+      scrollbar-width: thin;
+      scrollbar-color: #00ff8c rgba(0, 20, 10, 0.5);
     }
 
     body.modo-oscuro {
@@ -182,6 +208,27 @@
       padding: 15px;
       border-radius: 15px;
       border: 1px solid rgba(0, 255, 140, 0.2);
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* Estilos de scroll para el historial */
+    #historial::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #historial::-webkit-scrollbar-track {
+      background: rgba(0, 30, 15, 0.3);
+      border-radius: 4px;
+    }
+
+    #historial::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00ff8c, #00c46b);
+      border-radius: 4px;
+    }
+
+    #historial::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #00ffcc, #00c46b);
     }
 
     body.modo-oscuro #historial {
@@ -311,6 +358,23 @@
       70% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
       100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
     }
+
+    /* Pie de página */
+    footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      z-index: 1;
+    }
+
+    footer a {
+      color: var(--verde-fluo);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -334,6 +398,10 @@
     <h2>Historial reciente</h2>
     <ul id="lista-claves"></ul>
   </div>
+
+  <footer>
+    Generador de claves con fondo de lava | <a href="#" onclick="reiniciarTodo()">Reiniciar</a>
+  </footer>
 
   <!-- Librería de partículas -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
@@ -512,6 +580,17 @@
         efectoVisionNocturna();
       }
     }
+    
+    function reiniciarTodo() {
+      if (confirm('¿Estás seguro de que quieres reiniciar todo? Se borrará el historial y el contador.')) {
+        localStorage.clear();
+        lista.innerHTML = "";
+        contador = 0;
+        contadorDiv.textContent = contador;
+        claveDiv.textContent = "------";
+        claveActual = "";
+      }
+    }
 
     // Inicialización
     window.onload = function() {
@@ -522,7 +601,7 @@
       contador = historial.length;
       contadorDiv.textContent = contador;
       
-      // Agregar burbujas de fondo
+      // Crear burbujas de fondo
       crearBurbujas();
     };
 
