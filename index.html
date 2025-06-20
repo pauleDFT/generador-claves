@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="https://emojiapi.dev/api/v1/key/64.png" />
-  <title>🔐 Generador de Claves + 🎮 Mini Juego</title>
+  <title>🔐 Generador de Claves | Fondo Lava</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --color-claro: #ffffff;
       --color-oscuro: #121212;
+      --verde-fluo: #00ff8c;
+      --verde-medio: #00c46b;
+      --verde-oscuro: #009956;
     }
 
     body {
@@ -21,36 +24,89 @@
       align-items: center;
       min-height: 100vh;
       text-align: center;
-      background: linear-gradient(135deg, #ff0080, #ad02d8);
-      color: white;
+      background: #000;
+      color: var(--verde-fluo);
       position: relative;
       overflow: hidden;
+      transition: background 0.8s ease;
     }
 
     body.modo-oscuro {
-      background: linear-gradient(135deg, #121212, #1f1f1f);
-      color: white;
+      background: #0a1f0a;
+      color: #fff;
+    }
+
+    body.modo-oscuro::before {
+      filter: sepia(100%) hue-rotate(60deg) saturate(300%) brightness(0.4);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 30%, var(--verde-medio), transparent 40%),
+        radial-gradient(circle at 80% 40%, var(--verde-fluo), transparent 50%),
+        radial-gradient(circle at 50% 70%, var(--verde-oscuro), transparent 60%),
+        linear-gradient(to bottom, #000, #001a0d);
+      z-index: -2;
+      animation: lava-move 25s infinite linear;
+    }
+
+    @keyframes lava-move {
+      0% {
+        transform: translate(0, 0);
+      }
+      25% {
+        transform: translate(-2%, 3%);
+      }
+      50% {
+        transform: translate(0, 5%);
+      }
+      75% {
+        transform: translate(2%, 3%);
+      }
+      100% {
+        transform: translate(0, 0);
+      }
     }
 
     h1 {
       font-size: 2.2rem;
       margin-bottom: 20px;
       z-index: 1;
+      text-shadow: 0 0 10px rgba(0, 255, 140, 0.5);
     }
 
     #clave {
       font-size: 4rem;
       letter-spacing: 6px;
       font-weight: 700;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 20, 10, 0.6);
       padding: 20px 40px;
       border-radius: 20px;
       margin: 20px 0;
       backdrop-filter: blur(10px);
       user-select: none;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 
+        0 0 20px rgba(0, 255, 140, 0.3),
+        0 8px 20px rgba(0, 0, 0, 0.5);
       z-index: 1;
       animation: salto 0.5s ease;
+      color: var(--verde-fluo);
+      border: 1px solid rgba(0, 255, 140, 0.3);
+    }
+
+    body.modo-oscuro #clave {
+      background: rgba(10, 30, 15, 0.8);
+      color: #fff;
+      box-shadow: 
+        0 0 20px rgba(0, 100, 50, 0.2),
+        0 8px 20px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(100, 255, 180, 0.1);
     }
 
     @keyframes salto {
@@ -74,15 +130,31 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      background: #ffffff;
-      color: #3a7bd5;
-      transition: background 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      background: rgba(0, 40, 20, 0.8);
+      color: var(--verde-fluo);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0, 255, 140, 0.2);
+      font-weight: 600;
     }
 
     button:hover {
-      background: #e0e0e0;
-      transform: translateY(-2px);
+      background: rgba(0, 60, 30, 0.9);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 255, 140, 0.4);
+    }
+
+    body.modo-oscuro button {
+      background: rgba(30, 70, 40, 0.7);
+      color: #fff;
+      border: 1px solid rgba(100, 255, 180, 0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    body.modo-oscuro button:hover {
+      background: rgba(40, 90, 50, 0.8);
+      box-shadow: 0 6px 20px rgba(100, 255, 180, 0.2);
     }
 
     #contador {
@@ -90,6 +162,15 @@
       margin-bottom: 15px;
       font-size: 1.1rem;
       z-index: 1;
+      background: rgba(0, 20, 10, 0.5);
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 140, 0.2);
+    }
+
+    body.modo-oscuro #contador {
+      background: rgba(10, 30, 15, 0.6);
+      border: 1px solid rgba(100, 255, 180, 0.1);
     }
 
     #historial {
@@ -97,11 +178,26 @@
       width: 100%;
       text-align: left;
       z-index: 1;
+      background: rgba(0, 20, 10, 0.5);
+      padding: 15px;
+      border-radius: 15px;
+      border: 1px solid rgba(0, 255, 140, 0.2);
+    }
+
+    body.modo-oscuro #historial {
+      background: rgba(10, 30, 15, 0.6);
+      border: 1px solid rgba(100, 255, 180, 0.1);
     }
 
     #historial h2 {
       font-size: 1.2rem;
       margin-bottom: 10px;
+      color: var(--verde-fluo);
+      text-align: center;
+    }
+
+    body.modo-oscuro #historial h2 {
+      color: #fff;
     }
 
     #historial ul {
@@ -110,19 +206,31 @@
     }
 
     #historial li {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
+      background: rgba(0, 30, 15, 0.6);
+      color: var(--verde-fluo);
       padding: 10px 15px;
       margin-bottom: 8px;
       border-radius: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: transform 0.2s ease;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 255, 140, 0.1);
+    }
+
+    body.modo-oscuro #historial li {
+      background: rgba(20, 50, 30, 0.7);
+      color: #fff;
+      border: 1px solid rgba(100, 255, 180, 0.05);
     }
 
     #historial li:hover {
       transform: translateX(5px);
+      background: rgba(0, 50, 25, 0.7);
+    }
+
+    body.modo-oscuro #historial li:hover {
+      background: rgba(30, 70, 40, 0.8);
     }
 
     .hora {
@@ -130,60 +238,59 @@
       opacity: 0.8;
     }
 
-    /* Juego de cazar emojis */
-    .emoji-cazable {
-      position: fixed;
-      font-size: 2rem;
-      cursor: pointer;
-      user-select: none;
-      z-index: 5;
-      animation: flotar 3s infinite ease-in-out;
-    }
-
-    @keyframes flotar {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .emoji-cazable:hover {
-      transform: scale(1.2);
-    }
-
-    .emoji-cazable.capturado {
-      animation: capturado 0.5s forwards;
-    }
-
-    @keyframes capturado {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(2); opacity: 0; }
-    }
-
-    #contador-juego {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      font-size: 1.2rem;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 10px 20px;
-      border-radius: 10px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* Fondo partículas */
+    /* Partículas de fondo */
     #fondo-animado {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 0;
+      z-index: -1;
       pointer-events: none;
     }
 
-    /* Mensaje especial */
+    /* Visión nocturna para modo oscuro */
+    .vision-nocturna {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, transparent 60%, rgba(0, 50, 0, 0.7) 100%);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    body.modo-oscuro .vision-nocturna {
+      opacity: 0.7;
+    }
+
+    /* Efecto de escaneo de visión nocturna */
+    @keyframes escaneo {
+      0% { top: 0%; }
+      100% { top: 100%; }
+    }
+
+    .linea-escaneo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to bottom, transparent, rgba(0, 255, 0, 0.5), transparent);
+      z-index: 0;
+      opacity: 0;
+      animation: escaneo 3s infinite linear;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    body.modo-oscuro .linea-escaneo {
+      opacity: 0.3;
+    }
+
+    /* Mensajes especiales */
     .mensaje-especial {
       position: fixed;
       top: 50%;
@@ -193,7 +300,9 @@
       font-weight: bold;
       z-index: 20;
       animation: mensajeAnimacion 2s forwards;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      text-shadow: 0 0 15px var(--verde-fluo);
+      color: var(--verde-fluo);
+      text-align: center;
     }
 
     @keyframes mensajeAnimacion {
@@ -206,17 +315,19 @@
 </head>
 <body>
   <div id="fondo-animado"></div>
-  <div id="contador-juego">🎯 <span id="puntos">0</span> puntos</div>
-  <h1>🔐 Generador de Claves + 🎮 Mini Juego</h1>
+  <div class="vision-nocturna"></div>
+  <div class="linea-escaneo"></div>
+  
+  <h1>🔐 Generador de Claves</h1>
   <div id="contador">Claves generadas: <span id="contador-numero">0</span></div>
   <div id="clave">------</div>
+  
   <div class="botones">
     <button onclick="generarClave()">🎲 Generar Clave</button>
     <button onclick="copiarClave()">📋 Copiar Clave</button>
     <button onclick="borrarHistorial()">🗑️ Borrar Historial</button>
     <button onclick="toggleSonido()" id="boton-sonido">🔊 Sonido: ON</button>
-    <button onclick="cambiarModo()" id="modo">🌙 Modo Oscuro</button>
-    <button onclick="iniciarJuego()" id="boton-juego">▶️ Iniciar Juego</button>
+    <button onclick="cambiarModo()" id="modo">🌙 Modo Visión Nocturna</button>
   </div>
 
   <div id="historial">
@@ -228,49 +339,32 @@
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 
   <script>
-    // Variables globales
-    let claveActual = "";
-    let contador = 0;
-    let sonidoActivo = true;
-    let juegoActivo = false;
-    let puntos = 0;
-    let intervaloEmojis;
-    let velocidadJuego = 2000; // milisegundos entre emojis
-    const lista = document.getElementById('lista-claves');
-    const contadorDiv = document.getElementById('contador-numero');
-    const claveDiv = document.getElementById('clave');
-    const puntosDiv = document.getElementById('puntos');
-    const sonidoGenerar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3');
-    const sonidoCopiar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3');
-    const sonidoCaptura = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3');
-    const sonidoEspecial = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3');
-    
-    // Emojis disponibles para el juego
-    const emojis = ['🔑', '🔒', '🔓', '🔏', '🔐', '🔍', '💎', '💍', '💼', '📱', '💻', '⌨️', '🖱️', '💾', '💿', '📀', '🎮', '👾', '🕹️', '🎲', '🧩', '🎯', '🎰', '🎳', '🏆', '🥇', '🥈', '🥉', '🏅', '🎖️', '🏵️', '💐', '🌸', '💮', '🏵️', '🌹', '🥀', '🌺', '🌻', '🌼', '🌷', '🌱', '🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '🍀', '🍁', '🍂', '🍃', '🍄', '🍅', '🍆', '🍇', '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', '🥭', '🍎', '🍏', '🍐', '🍑', '🍒', '🍓', '🥝', '🍅', '🥥', '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🥒', '🥬', '🥦', '🧄', '🧅', '🍄', '🥜', '🌰', '🍞', '🥐', '🥖', '🥨', '🥯', '🥞', '🧇', '🧀', '🍖', '🍗', '🥩', '🥓', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🥙', '🧆', '🥚', '🍳', '🥘', '🍲', '🥣', '🥗', '🍿', '🧈', '🧂', '🥫', '🍱', '🍘', '🍙', '🍚', '🍛', '🍜', '🍝', '🍠', '🍢', '🍣', '🍤', '🍥', '🥮', '🍡', '🥟', '🥠', '🥡', '🦪', '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🍰', '🧁', '🥧', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼', '🥛', '☕', '🍵', '🍶', '🍾', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🥤', '🧃', '🧉', '🧊', '🥢', '🍽️', '🍴', '🥄', '🔪', '🏺'];
-
-    // Partículas de fondo
+    // Configuración de partículas para el fondo
     particlesJS("fondo-animado", {
       particles: {
-        number: { value: 80, density: { enable: true, value_area: 800 } },
-        color: { value: "#ffffff" },
+        number: { value: 50, density: { enable: true, value_area: 800 } },
+        color: { value: "#00ff8c" },
         shape: { type: "circle" },
-        opacity: { value: 0.3 },
-        size: { value: 4, random: true },
+        opacity: { value: 0.3, random: true },
+        size: { value: 3, random: true, anim: { enable: true, speed: 2, size_min: 0.1 } },
         line_linked: {
           enable: true,
-          distance: 150,
-          color: "#ffffff",
-          opacity: 0.4,
+          distance: 100,
+          color: "#00c46b",
+          opacity: 0.2,
           width: 1,
         },
         move: {
           enable: true,
-          speed: 2,
+          speed: 1,
           direction: "none",
-          out_mode: "out"
+          random: true,
+          straight: false,
+          out_mode: "out",
         },
       },
       interactivity: {
+        detect_on: "canvas",
         events: {
           onhover: { enable: true, mode: "repulse" },
           onclick: { enable: true, mode: "push" }
@@ -283,103 +377,37 @@
       retina_detect: true,
     });
 
-    // Función para crear un emoji en posición aleatoria
-    function crearEmoji() {
-      if (!juegoActivo) return;
-      
-      const emoji = document.createElement('div');
-      emoji.className = 'emoji-cazable';
-      
-      // Seleccionar un emoji aleatorio
-      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      
-      // Posicionar aleatoriamente
-      emoji.style.left = Math.random() * (window.innerWidth - 100) + 'px';
-      emoji.style.top = Math.random() * (window.innerHeight - 100) + 'px';
-      
-      // Tamaño aleatorio
-      const size = Math.random() * 1.5 + 1;
-      emoji.style.fontSize = `${size}rem`;
-      
-      // Evento al hacer clic
-      emoji.addEventListener('click', () => {
-        capturarEmoji(emoji);
-      });
-      
-      // Desaparecer después de un tiempo
-      setTimeout(() => {
-        if (emoji.parentNode) {
-          emoji.remove();
-        }
-      }, 5000);
-      
-      document.body.appendChild(emoji);
-    }
+    // Variables globales
+    let claveActual = "";
+    let contador = 0;
+    let sonidoActivo = true;
+    const lista = document.getElementById('lista-claves');
+    const contadorDiv = document.getElementById('contador-numero');
+    const claveDiv = document.getElementById('clave');
+    const sonidoGenerar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3');
+    const sonidoCopiar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3');
+    const sonidoVision = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-bleep-908.mp3');
 
-    // Función para capturar un emoji
-    function capturarEmoji(emoji) {
-      emoji.classList.add('capturado');
+    // Efecto especial para modo visión nocturna
+    function efectoVisionNocturna() {
+      const efecto = document.createElement('div');
+      efecto.className = 'mensaje-especial';
+      efecto.textContent = 'VISIÓN NOCTURNA ACTIVADA';
+      efecto.style.fontSize = '2rem';
+      efecto.style.color = '#00ff00';
+      document.body.appendChild(efecto);
       
-      // Determinar puntos basados en el emoji
-      let puntosObtenidos = 1;
-      const emojiTexto = emoji.textContent;
-      
-      if (['🔑', '🔒', '💎', '🏆'].includes(emojiTexto)) {
-        puntosObtenidos = 5;
-      } else if (['🎮', '👾', '💍', '🥇'].includes(emojiTexto)) {
-        puntosObtenidos = 3;
-      }
-      
-      puntos += puntosObtenidos;
-      puntosDiv.textContent = puntos;
-      
-      // Mostrar mensaje de puntos
-      const mensaje = document.createElement('div');
-      mensaje.className = 'mensaje-especial';
-      mensaje.textContent = `+${puntosObtenidos}`;
-      mensaje.style.color = puntosObtenidos > 1 ? '#ffcc00' : '#ffffff';
-      document.body.appendChild(mensaje);
-      
-      // Sonido
-      if (sonidoActivo) {
-        if (puntosObtenidos > 1) {
-          sonidoEspecial.currentTime = 0;
-          sonidoEspecial.play();
-        } else {
-          sonidoCaptura.currentTime = 0;
-          sonidoCaptura.play();
-        }
-      }
-      
-      // Eliminar después de la animación
       setTimeout(() => {
-        if (emoji.parentNode) {
-          emoji.remove();
-        }
-        mensaje.remove();
+        efecto.remove();
       }, 2000);
-    }
-
-    // Iniciar o detener el juego
-    function iniciarJuego() {
-      juegoActivo = !juegoActivo;
-      const botonJuego = document.getElementById('boton-juego');
       
-      if (juegoActivo) {
-        botonJuego.textContent = '⏹️ Detener Juego';
-        botonJuego.style.background = '#ffcc00';
-        intervaloEmojis = setInterval(crearEmoji, velocidadJuego);
-      } else {
-        botonJuego.textContent = '▶️ Iniciar Juego';
-        botonJuego.style.background = '';
-        clearInterval(intervaloEmojis);
-        
-        // Eliminar todos los emojis restantes
-        document.querySelectorAll('.emoji-cazable').forEach(emoji => emoji.remove());
+      if (sonidoActivo) {
+        sonidoVision.currentTime = 0;
+        sonidoVision.play();
       }
     }
 
-    // Funcionalidad del generador de claves
+    // Función para generar claves
     function generarClave() {
       const nuevaClave = Math.floor(100000 + Math.random() * 900000).toString();
       claveActual = nuevaClave;
@@ -388,7 +416,7 @@
       contador++;
       contadorDiv.textContent = contador;
       
-      // Efecto visual especial
+      // Efecto visual
       claveDiv.style.animation = 'none';
       setTimeout(() => {
         claveDiv.style.animation = 'salto 0.5s ease';
@@ -400,34 +428,21 @@
         sonidoGenerar.play();
       }
       
-      // Crear emojis especiales al generar clave
-      if (juegoActivo) {
-        crearEmojiEspecial();
+      // Efecto especial cada 5 claves
+      if (contador % 5 === 0) {
+        const efecto = document.createElement('div');
+        efecto.className = 'mensaje-especial';
+        efecto.textContent = '¡CLAVE ESPECIAL GENERADA!';
+        efecto.style.color = '#00ff8c';
+        document.body.appendChild(efecto);
+        
+        setTimeout(() => {
+          efecto.remove();
+        }, 2000);
       }
     }
 
-    // Crear emoji especial cuando se genera una clave
-    function crearEmojiEspecial() {
-      const emoji = document.createElement('div');
-      emoji.className = 'emoji-cazable';
-      emoji.textContent = '🔑';
-      emoji.style.fontSize = '3rem';
-      emoji.style.left = Math.random() * (window.innerWidth - 100) + 'px';
-      emoji.style.top = Math.random() * (window.innerHeight - 100) + 'px';
-      
-      emoji.addEventListener('click', () => {
-        capturarEmoji(emoji);
-      });
-      
-      setTimeout(() => {
-        if (emoji.parentNode) {
-          emoji.remove();
-        }
-      }, 5000);
-      
-      document.body.appendChild(emoji);
-    }
-
+    // Función para copiar claves
     function copiarClave() {
       if (!claveActual) return;
       navigator.clipboard.writeText(claveActual)
@@ -435,8 +450,8 @@
           // Mensaje especial
           const mensaje = document.createElement('div');
           mensaje.className = 'mensaje-especial';
-          mensaje.textContent = '📋 ¡Copiado!';
-          mensaje.style.color = '#00ff99';
+          mensaje.textContent = '📋 ¡COPIADO!';
+          mensaje.style.color = '#00ff8c';
           document.body.appendChild(mensaje);
           
           setTimeout(() => {
@@ -450,6 +465,7 @@
         });
     }
 
+    // Historial de claves
     function agregarAlHistorial(clave) {
       const nueva = document.createElement('li');
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -461,7 +477,7 @@
       historial.push({ clave, hora });
       localStorage.setItem('historial', JSON.stringify(historial));
       
-      // Mantener solo 5 elementos en la lista
+      // Mantener solo 5 elementos
       if (lista.childElementCount > 5) lista.removeChild(lista.lastChild);
     }
 
@@ -481,6 +497,7 @@
       }
     }
 
+    // Funciones de configuración
     function toggleSonido() {
       sonidoActivo = !sonidoActivo;
       document.getElementById("boton-sonido").textContent = sonidoActivo ? "🔊 Sonido: ON" : "🔇 Sonido: OFF";
@@ -489,20 +506,75 @@
     function cambiarModo() {
       document.body.classList.toggle("modo-oscuro");
       const esOscuro = document.body.classList.contains("modo-oscuro");
-      document.getElementById("modo").textContent = esOscuro ? "☀️ Modo Claro" : "🌙 Modo Oscuro";
+      document.getElementById("modo").textContent = esOscuro ? "☀️ Modo Normal" : "🌙 Modo Visión Nocturna";
+      
+      if (esOscuro) {
+        efectoVisionNocturna();
+      }
     }
 
+    // Inicialización
     window.onload = function() {
       cargarHistorial();
       
-      // Cargar contador de claves
+      // Cargar contador
       const historial = JSON.parse(localStorage.getItem('historial')) || [];
       contador = historial.length;
       contadorDiv.textContent = contador;
       
-      // Iniciar juego automáticamente
-      setTimeout(iniciarJuego, 2000);
+      // Agregar burbujas de fondo
+      crearBurbujas();
     };
+
+    // Crear burbujas para efecto de lava
+    function crearBurbujas() {
+      const container = document.getElementById('fondo-animado');
+      const bubbleCount = 20;
+      
+      for (let i = 0; i < bubbleCount; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        
+        // Tamaño y posición aleatorios
+        const size = Math.random() * 80 + 20;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const duration = Math.random() * 20 + 20;
+        
+        bubble.style.cssText = `
+          position: absolute;
+          width: ${size}px;
+          height: ${size}px;
+          background: radial-gradient(circle, 
+            rgba(0, 255, 140, ${Math.random()*0.4 + 0.1}), 
+            rgba(0, 150, 80, ${Math.random()*0.3 + 0.05}));
+          border-radius: 50%;
+          left: ${posX}%;
+          top: ${posY}%;
+          animation: float ${duration}s infinite ease-in-out;
+          filter: blur(${Math.random()*5 + 2}px);
+          z-index: -1;
+        `;
+        
+        // Animación personalizada para cada burbuja
+        const keyframes = `
+          @keyframes bubbleFloat-${i} {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+            25% { transform: translate(${Math.random()*40 - 20}px, ${Math.random()*40 - 20}px) scale(${Math.random()*0.5 + 0.8}); }
+            50% { transform: translate(${Math.random()*80 - 40}px, ${Math.random()*80 - 40}px) scale(${Math.random()*0.5 + 0.6}); }
+            75% { transform: translate(${Math.random()*40 - 20}px, ${Math.random()*40 - 20}px) scale(${Math.random()*0.5 + 0.8}); }
+            100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+          }
+        `;
+        
+        const style = document.createElement('style');
+        style.innerHTML = keyframes;
+        document.head.appendChild(style);
+        
+        bubble.style.animation = `bubbleFloat-${i} ${duration}s infinite ease-in-out`;
+        container.appendChild(bubble);
+      }
+    }
   </script>
 </body>
 </html>
