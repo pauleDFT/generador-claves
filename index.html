@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" href="https://emojiapi.dev/api/v1/key/64.png" />
-  <title>🔐 Generador de Claves</title>
+  <title>🔐 Generador de Claves + 🎮 Mini Juego</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet" />
   <style>
@@ -76,12 +76,13 @@
       cursor: pointer;
       background: #ffffff;
       color: #3a7bd5;
-      transition: background 0.3s ease;
+      transition: background 0.3s ease, transform 0.2s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
 
     button:hover {
       background: #e0e0e0;
+      transform: translateY(-2px);
     }
 
     #contador {
@@ -117,11 +118,58 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    #historial li:hover {
+      transform: translateX(5px);
     }
 
     .hora {
       font-size: 0.9rem;
       opacity: 0.8;
+    }
+
+    /* Juego de cazar emojis */
+    .emoji-cazable {
+      position: fixed;
+      font-size: 2rem;
+      cursor: pointer;
+      user-select: none;
+      z-index: 5;
+      animation: flotar 3s infinite ease-in-out;
+    }
+
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .emoji-cazable:hover {
+      transform: scale(1.2);
+    }
+
+    .emoji-cazable.capturado {
+      animation: capturado 0.5s forwards;
+    }
+
+    @keyframes capturado {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    #contador-juego {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 1.2rem;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 10px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     /* Fondo partículas */
@@ -134,19 +182,41 @@
       z-index: 0;
       pointer-events: none;
     }
+
+    /* Mensaje especial */
+    .mensaje-especial {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3rem;
+      font-weight: bold;
+      z-index: 20;
+      animation: mensajeAnimacion 2s forwards;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    @keyframes mensajeAnimacion {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+      70% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    }
   </style>
 </head>
 <body>
   <div id="fondo-animado"></div>
-  <h1>Clave Aleatoria Divertida</h1>
-  <div id="contador">Claves generadas: 0</div>
+  <div id="contador-juego">🎯 <span id="puntos">0</span> puntos</div>
+  <h1>🔐 Generador de Claves + 🎮 Mini Juego</h1>
+  <div id="contador">Claves generadas: <span id="contador-numero">0</span></div>
   <div id="clave">------</div>
   <div class="botones">
-    <button onclick="generarClave()">Generar Clave</button>
-    <button onclick="copiarClave()">Copiar Clave</button>
-    <button onclick="borrarHistorial()">Borrar Historial</button>
+    <button onclick="generarClave()">🎲 Generar Clave</button>
+    <button onclick="copiarClave()">📋 Copiar Clave</button>
+    <button onclick="borrarHistorial()">🗑️ Borrar Historial</button>
     <button onclick="toggleSonido()" id="boton-sonido">🔊 Sonido: ON</button>
     <button onclick="cambiarModo()" id="modo">🌙 Modo Oscuro</button>
+    <button onclick="iniciarJuego()" id="boton-juego">▶️ Iniciar Juego</button>
   </div>
 
   <div id="historial">
@@ -158,7 +228,27 @@
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 
   <script>
-    // Partículas
+    // Variables globales
+    let claveActual = "";
+    let contador = 0;
+    let sonidoActivo = true;
+    let juegoActivo = false;
+    let puntos = 0;
+    let intervaloEmojis;
+    let velocidadJuego = 2000; // milisegundos entre emojis
+    const lista = document.getElementById('lista-claves');
+    const contadorDiv = document.getElementById('contador-numero');
+    const claveDiv = document.getElementById('clave');
+    const puntosDiv = document.getElementById('puntos');
+    const sonidoGenerar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3');
+    const sonidoCopiar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3');
+    const sonidoCaptura = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3');
+    const sonidoEspecial = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3');
+    
+    // Emojis disponibles para el juego
+    const emojis = ['🔑', '🔒', '🔓', '🔏', '🔐', '🔍', '💎', '💍', '💼', '📱', '💻', '⌨️', '🖱️', '💾', '💿', '📀', '🎮', '👾', '🕹️', '🎲', '🧩', '🎯', '🎰', '🎳', '🏆', '🥇', '🥈', '🥉', '🏅', '🎖️', '🏵️', '💐', '🌸', '💮', '🏵️', '🌹', '🥀', '🌺', '🌻', '🌼', '🌷', '🌱', '🌲', '🌳', '🌴', '🌵', '🌾', '🌿', '🍀', '🍁', '🍂', '🍃', '🍄', '🍅', '🍆', '🍇', '🍈', '🍉', '🍊', '🍋', '🍌', '🍍', '🥭', '🍎', '🍏', '🍐', '🍑', '🍒', '🍓', '🥝', '🍅', '🥥', '🥑', '🍆', '🥔', '🥕', '🌽', '🌶️', '🥒', '🥬', '🥦', '🧄', '🧅', '🍄', '🥜', '🌰', '🍞', '🥐', '🥖', '🥨', '🥯', '🥞', '🧇', '🧀', '🍖', '🍗', '🥩', '🥓', '🍔', '🍟', '🍕', '🌭', '🥪', '🌮', '🌯', '🥙', '🧆', '🥚', '🍳', '🥘', '🍲', '🥣', '🥗', '🍿', '🧈', '🧂', '🥫', '🍱', '🍘', '🍙', '🍚', '🍛', '🍜', '🍝', '🍠', '🍢', '🍣', '🍤', '🍥', '🥮', '🍡', '🥟', '🥠', '🥡', '🦪', '🍦', '🍧', '🍨', '🍩', '🍪', '🎂', '🍰', '🧁', '🥧', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼', '🥛', '☕', '🍵', '🍶', '🍾', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃', '🥤', '🧃', '🧉', '🧊', '🥢', '🍽️', '🍴', '🥄', '🔪', '🏺'];
+
+    // Partículas de fondo
     particlesJS("fondo-animado", {
       particles: {
         number: { value: 80, density: { enable: true, value_area: 800 } },
@@ -193,32 +283,170 @@
       retina_detect: true,
     });
 
-    // Funcionalidad
-    let claveActual = "";
-    let contador = 0;
-    let sonidoActivo = true;
-    const lista = document.getElementById('lista-claves');
-    const contadorDiv = document.getElementById('contador');
-    const claveDiv = document.getElementById('clave');
-    const sonidoGenerar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3');
-    const sonidoCopiar = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3');
+    // Función para crear un emoji en posición aleatoria
+    function crearEmoji() {
+      if (!juegoActivo) return;
+      
+      const emoji = document.createElement('div');
+      emoji.className = 'emoji-cazable';
+      
+      // Seleccionar un emoji aleatorio
+      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      
+      // Posicionar aleatoriamente
+      emoji.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+      emoji.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+      
+      // Tamaño aleatorio
+      const size = Math.random() * 1.5 + 1;
+      emoji.style.fontSize = `${size}rem`;
+      
+      // Evento al hacer clic
+      emoji.addEventListener('click', () => {
+        capturarEmoji(emoji);
+      });
+      
+      // Desaparecer después de un tiempo
+      setTimeout(() => {
+        if (emoji.parentNode) {
+          emoji.remove();
+        }
+      }, 5000);
+      
+      document.body.appendChild(emoji);
+    }
 
+    // Función para capturar un emoji
+    function capturarEmoji(emoji) {
+      emoji.classList.add('capturado');
+      
+      // Determinar puntos basados en el emoji
+      let puntosObtenidos = 1;
+      const emojiTexto = emoji.textContent;
+      
+      if (['🔑', '🔒', '💎', '🏆'].includes(emojiTexto)) {
+        puntosObtenidos = 5;
+      } else if (['🎮', '👾', '💍', '🥇'].includes(emojiTexto)) {
+        puntosObtenidos = 3;
+      }
+      
+      puntos += puntosObtenidos;
+      puntosDiv.textContent = puntos;
+      
+      // Mostrar mensaje de puntos
+      const mensaje = document.createElement('div');
+      mensaje.className = 'mensaje-especial';
+      mensaje.textContent = `+${puntosObtenidos}`;
+      mensaje.style.color = puntosObtenidos > 1 ? '#ffcc00' : '#ffffff';
+      document.body.appendChild(mensaje);
+      
+      // Sonido
+      if (sonidoActivo) {
+        if (puntosObtenidos > 1) {
+          sonidoEspecial.currentTime = 0;
+          sonidoEspecial.play();
+        } else {
+          sonidoCaptura.currentTime = 0;
+          sonidoCaptura.play();
+        }
+      }
+      
+      // Eliminar después de la animación
+      setTimeout(() => {
+        if (emoji.parentNode) {
+          emoji.remove();
+        }
+        mensaje.remove();
+      }, 2000);
+    }
+
+    // Iniciar o detener el juego
+    function iniciarJuego() {
+      juegoActivo = !juegoActivo;
+      const botonJuego = document.getElementById('boton-juego');
+      
+      if (juegoActivo) {
+        botonJuego.textContent = '⏹️ Detener Juego';
+        botonJuego.style.background = '#ffcc00';
+        intervaloEmojis = setInterval(crearEmoji, velocidadJuego);
+      } else {
+        botonJuego.textContent = '▶️ Iniciar Juego';
+        botonJuego.style.background = '';
+        clearInterval(intervaloEmojis);
+        
+        // Eliminar todos los emojis restantes
+        document.querySelectorAll('.emoji-cazable').forEach(emoji => emoji.remove());
+      }
+    }
+
+    // Funcionalidad del generador de claves
     function generarClave() {
       const nuevaClave = Math.floor(100000 + Math.random() * 900000).toString();
       claveActual = nuevaClave;
       claveDiv.textContent = nuevaClave;
       agregarAlHistorial(nuevaClave);
       contador++;
-      contadorDiv.textContent = `Claves generadas: ${contador}`;
-      if (sonidoActivo) sonidoGenerar.play();
+      contadorDiv.textContent = contador;
+      
+      // Efecto visual especial
+      claveDiv.style.animation = 'none';
+      setTimeout(() => {
+        claveDiv.style.animation = 'salto 0.5s ease';
+      }, 10);
+      
+      // Sonido
+      if (sonidoActivo) {
+        sonidoGenerar.currentTime = 0;
+        sonidoGenerar.play();
+      }
+      
+      // Crear emojis especiales al generar clave
+      if (juegoActivo) {
+        crearEmojiEspecial();
+      }
+    }
+
+    // Crear emoji especial cuando se genera una clave
+    function crearEmojiEspecial() {
+      const emoji = document.createElement('div');
+      emoji.className = 'emoji-cazable';
+      emoji.textContent = '🔑';
+      emoji.style.fontSize = '3rem';
+      emoji.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+      emoji.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+      
+      emoji.addEventListener('click', () => {
+        capturarEmoji(emoji);
+      });
+      
+      setTimeout(() => {
+        if (emoji.parentNode) {
+          emoji.remove();
+        }
+      }, 5000);
+      
+      document.body.appendChild(emoji);
     }
 
     function copiarClave() {
       if (!claveActual) return;
       navigator.clipboard.writeText(claveActual)
         .then(() => {
-          alert("Clave copiada al portapapeles");
-          if (sonidoActivo) sonidoCopiar.play();
+          // Mensaje especial
+          const mensaje = document.createElement('div');
+          mensaje.className = 'mensaje-especial';
+          mensaje.textContent = '📋 ¡Copiado!';
+          mensaje.style.color = '#00ff99';
+          document.body.appendChild(mensaje);
+          
+          setTimeout(() => {
+            mensaje.remove();
+          }, 2000);
+          
+          if (sonidoActivo) {
+            sonidoCopiar.currentTime = 0;
+            sonidoCopiar.play();
+          }
         });
     }
 
@@ -227,9 +455,13 @@
       const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       nueva.innerHTML = `<span>${clave}</span><span class="hora">${hora}</span>`;
       lista.prepend(nueva);
+      
+      // Guardar en localStorage
       let historial = JSON.parse(localStorage.getItem('historial')) || [];
       historial.push({ clave, hora });
       localStorage.setItem('historial', JSON.stringify(historial));
+      
+      // Mantener solo 5 elementos en la lista
       if (lista.childElementCount > 5) lista.removeChild(lista.lastChild);
     }
 
@@ -243,8 +475,10 @@
     }
 
     function borrarHistorial() {
-      localStorage.removeItem('historial');
-      lista.innerHTML = "";
+      if (confirm('¿Estás seguro de que quieres borrar todo el historial?')) {
+        localStorage.removeItem('historial');
+        lista.innerHTML = "";
+      }
     }
 
     function toggleSonido() {
@@ -258,7 +492,17 @@
       document.getElementById("modo").textContent = esOscuro ? "☀️ Modo Claro" : "🌙 Modo Oscuro";
     }
 
-    window.onload = cargarHistorial;
+    window.onload = function() {
+      cargarHistorial();
+      
+      // Cargar contador de claves
+      const historial = JSON.parse(localStorage.getItem('historial')) || [];
+      contador = historial.length;
+      contadorDiv.textContent = contador;
+      
+      // Iniciar juego automáticamente
+      setTimeout(iniciarJuego, 2000);
+    };
   </script>
 </body>
 </html>
